@@ -17,30 +17,22 @@ function Dashboard({ user, token, onLogout }) {
       
       // Fetch profile, upline, and downline data
       const [profileRes, uplineRes, downlineRes] = await Promise.all([
-        fetch('https://web-production-e7748.up.railway.app/api/users/profile', {
+        fetch('/api/users/profile', {
           headers: { 
             'Authorization': `Bearer ${token}`,
-            'Accept': 'application/json'
           }
         }),
-        fetch('https://web-production-e7748.up.railway.app/api/users/upline', {
+        fetch('/api/users/upline', {
           headers: { 
             'Authorization': `Bearer ${token}`,
-            'Accept': 'application/json'
           }
         }),
-        fetch('https://web-production-e7748.up.railway.app/api/users/downline', {
+        fetch('/api/users/downline', {
           headers: { 
             'Authorization': `Bearer ${token}`,
-            'Accept': 'application/json'
           }
         })
       ]);
-
-      // Check if any requests failed
-      if (!profileRes.ok || !uplineRes.ok || !downlineRes.ok) {
-        throw new Error('Failed to fetch user data from server');
-      }
 
       const [profileData, uplineData, downlineData] = await Promise.all([
         profileRes.json(),
@@ -53,8 +45,7 @@ function Dashboard({ user, token, onLogout }) {
       if (downlineData.success) setDownline(downlineData.data.downline);
 
     } catch (err) {
-      console.error('Dashboard error:', err);
-      setError(err.message || 'Failed to load user data');
+      setError('Failed to load user data');
     } finally {
       setLoading(false);
     }

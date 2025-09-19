@@ -38,17 +38,11 @@ function RegisterForm({ onRegister, onSwitchToLogin }) {
     }
 
     try {
-      // Test with a simple request first
-      console.log('Attempting to register user...');
-      
-      const response = await fetch('https://web-production-e7748.up.railway.app/api/auth/register', {
+      const response = await fetch('/api/auth/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Origin': 'https://mlm-referral-tracker-b5a2.bolt.host'
         },
-        mode: 'cors',
         body: JSON.stringify({
           email: formData.email,
           password: formData.password,
@@ -56,17 +50,7 @@ function RegisterForm({ onRegister, onSwitchToLogin }) {
         }),
       });
 
-      console.log('Response status:', response.status);
-      console.log('Response headers:', response.headers);
-      
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('Response error:', response.status, errorText);
-        throw new Error(`HTTP ${response.status}: ${errorText}`);
-      }
-
       const data = await response.json();
-      console.log('Registration response:', data);
 
       if (data.success) {
         onRegister(data.data.user, data.data.token);
@@ -74,16 +58,7 @@ function RegisterForm({ onRegister, onSwitchToLogin }) {
         setError(data.message || 'Registration failed');
       }
     } catch (err) {
-      console.error('Registration error:', err);
-      
-      // More specific error messages
-      if (err.name === 'TypeError' && err.message.includes('Failed to fetch')) {
-        setError('Cannot connect to server. Please check if the backend is running.');
-      } else if (err.message.includes('CORS')) {
-        setError('Cross-origin request blocked. Please contact support.');
-      } else {
-        setError(err.message || 'Network error. Please try again.');
-      }
+      setError('Network error. Please try again.');
     } finally {
       setLoading(false);
     }
